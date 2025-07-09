@@ -30,46 +30,114 @@ std::array<TComplex, max_harmonic> get_flow_vectors(const std::vector<double>& p
   return allQ;
 }
 
+// <cos(n(phi1-phi2))>
 double calc2event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
 {
+  double M = allQ[0].Re();
+  if ( M < 2 ) return -9999;
+  // ---
   TComplex Q = allQ[harmonic];
   TComplex Qstar = TComplex::Conjugate(allQ[harmonic]);
   TComplex tc_numerator = Q*Qstar;
   double numerator = tc_numerator.Re();
-  double M = allQ[0].Re();
   double denominator = M*M(-1);
   return numerator/denominator;
 }
 
+// <cos(n(phi1a-phi2b))>
 double calcSPevent(const std::array<TComplex, max_harmonic>& allQA, std::array<TComplex, max_harmonic>& allQB, int harmonic)
 {
+  double MA = allQA[0].Re();
+  double MB = allQA[0].Re();
+  if ( MA < 1 || MB < 1 ) return -9999;
   TComplex QA = allQA[harmonic];
   TComplex QBstar = TComplex::Conjugate(allQB[harmonic]);
   TComplex tc_numerator = QA*QBstar;
-  double MA = allQA[0].Re();
-  double MB = allQA[0].Re();
   double numerator = tc_numerator.Re();
   double denominator = MA*MB;
   return numerator/denominator;
 }
 
-double calc4event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
+// <cos(n(phi1+phi2))>
+double BoulderCumulants::calccossum2event(const std::array<TComplex, max_harmonic>& allQA, std::array<TComplex, max_harmonic>& allQB, int harmonic)
 {
+  double M = allQ[0].Re();
+  if ( M < 2 ) return -9999;
+  // ---
+  TComplex Q = allQ[harmonic];
+  TComplex Q2 = allQ[2*harmonic];
+  TComplex result = Q*Q - Q2;
+  double numerator = result.Re();
+  double denominator = M*(M-1);
+  return numerator/denominator;
+}
+
+// <sin(n(phi1+phi2))>
+double BoulderCumulants::calcsinsum2event(const std::array<TComplex, max_harmonic>& allQA, std::array<TComplex, max_harmonic>& allQB, int harmonic)
+{
+  double M = allQ[0].Re();
+  if ( M < 2 ) return -9999;
+  // ---
+  TComplex Q = allQ[harmonic];
+  TComplex Q2 = allQ[2*harmonic];
+  TComplex result = Q*Q - Q2;
+  double numerator = result.Im();
+  double denominator = M*(M-1);
+  return numerator/denominator;
+}
+
+// <cos(n(phi1-phi2-phi3))>
+double BoulderCumulants::calccos3event(const std::array<TComplex, max_harmonic>& allQA, std::array<TComplex, max_harmonic>& allQB, int harmonic)
+{
+  double M = allQ[0].Re();
+  if ( M < 3 ) return -9999;
+  // ---
   TComplex Q = allQ[harmonic];
   TComplex Q2 = allQ[2*harmonic];
   TComplex Qstar = TComplex::Conjugate(allQ[harmonic]);
   TComplex Q2star = TComplex::Conjugate(allQ[2*harmonic]);
+  // ---
+  TComplex result = Q*Qstar*Qstar - Q*Q2star;
+  double numerator = result.Re() - 2*(M-1)*Qstar.Re();
+  double denominator = M*(M-1)*(M-2);
+  return numerator/denominator;
+}
 
+// <sin(n(phi1-phi2-phi3))>
+double BoulderCumulants::calcsin3event(const std::array<TComplex, max_harmonic>& allQA, std::array<TComplex, max_harmonic>& allQB, int harmonic)
+{
+  double M = allQ[0].Re();
+  if ( M < 3 ) return -9999;
+  // ---
+  TComplex Q = allQ[harmonic];
+  TComplex Q2 = allQ[2*harmonic];
+  TComplex Qstar = TComplex::Conjugate(allQ[harmonic]);
+  TComplex Q2star = TComplex::Conjugate(allQ[2*harmonic]);
+  // ---
+  TComplex result = Q*Qstar*Qstar - Q*Q2star;
+  double numerator = result.Im() - 2*(M-1)*Qstar.Im();
+  double denominator = M*(M-1)*(M-2);
+  return numerator/denominator;
+}
+
+// <cos(n(phi1+phi2-phi3-phi4))>
+double calc4event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
+{
+  double M = allQ[0].Re();
+  if ( M < 4 ) return -9999;
+  TComplex Q = allQ[harmonic];
+  TComplex Q2 = allQ[2*harmonic];
+  TComplex Qstar = TComplex::Conjugate(allQ[harmonic]);
+  TComplex Q2star = TComplex::Conjugate(allQ[2*harmonic]);
+  // ---
   TComplex tc_three = Q2*Qstar*Qstar;
-
+  // ---
   double one   = pow(Q.Rho2(),2);
   double two   = Q2.Rho2();
   double three = tc_three.Re();
   double four  = 2*(2*(M-2)*Q.Rho2());
   double five  = 2*(M*(M-3));
-
-  double M = allQ[0].Re();
-
+  // ---
   double numerator = one + two - three - four + five;
   double denominator = M*(M-1)*(M-2)*(M-3);
   return numerator/denominator;
