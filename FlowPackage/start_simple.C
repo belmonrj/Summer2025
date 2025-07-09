@@ -39,8 +39,10 @@ double calc2event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
   TComplex Q = allQ[harmonic];
   TComplex Qstar = TComplex::Conjugate(allQ[harmonic]);
   TComplex tc_numerator = Q*Qstar;
+  // ---
   double numerator = tc_numerator.Re();
   double denominator = M*M(-1);
+  // ---
   return numerator/denominator;
 }
 
@@ -50,11 +52,14 @@ double calcSPevent(const std::array<TComplex, max_harmonic>& allQA, std::array<T
   double MA = allQA[0].Re();
   double MB = allQA[0].Re();
   if ( MA < 1 || MB < 1 ) return -9999;
+  // ---
   TComplex QA = allQA[harmonic];
   TComplex QBstar = TComplex::Conjugate(allQB[harmonic]);
   TComplex tc_numerator = QA*QBstar;
+  // ---
   double numerator = tc_numerator.Re();
   double denominator = MA*MB;
+  // ---
   return numerator/denominator;
 }
 
@@ -67,8 +72,10 @@ double BoulderCumulants::calccossum2event(const std::array<TComplex, max_harmoni
   TComplex Q = allQ[harmonic];
   TComplex Q2 = allQ[2*harmonic];
   TComplex result = Q*Q - Q2;
+  // ---
   double numerator = result.Re();
   double denominator = M*(M-1);
+  // ---
   return numerator/denominator;
 }
 
@@ -81,8 +88,10 @@ double BoulderCumulants::calcsinsum2event(const std::array<TComplex, max_harmoni
   TComplex Q = allQ[harmonic];
   TComplex Q2 = allQ[2*harmonic];
   TComplex result = Q*Q - Q2;
+  // ---
   double numerator = result.Im();
   double denominator = M*(M-1);
+  // ---
   return numerator/denominator;
 }
 
@@ -96,10 +105,11 @@ double BoulderCumulants::calccos3event(const std::array<TComplex, max_harmonic>&
   TComplex Q2 = allQ[2*harmonic];
   TComplex Qstar = TComplex::Conjugate(allQ[harmonic]);
   TComplex Q2star = TComplex::Conjugate(allQ[2*harmonic]);
-  // ---
   TComplex result = Q*Qstar*Qstar - Q*Q2star;
+  // ---
   double numerator = result.Re() - 2*(M-1)*Qstar.Re();
   double denominator = M*(M-1)*(M-2);
+  // ---
   return numerator/denominator;
 }
 
@@ -113,10 +123,11 @@ double BoulderCumulants::calcsin3event(const std::array<TComplex, max_harmonic>&
   TComplex Q2 = allQ[2*harmonic];
   TComplex Qstar = TComplex::Conjugate(allQ[harmonic]);
   TComplex Q2star = TComplex::Conjugate(allQ[2*harmonic]);
-  // ---
   TComplex result = Q*Qstar*Qstar - Q*Q2star;
+  // ---
   double numerator = result.Im() - 2*(M-1)*Qstar.Im();
   double denominator = M*(M-1)*(M-2);
+  // ---
   return numerator/denominator;
 }
 
@@ -125,11 +136,11 @@ double calc4event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
 {
   double M = allQ[0].Re();
   if ( M < 4 ) return -9999;
+  // ---
   TComplex Q = allQ[harmonic];
   TComplex Q2 = allQ[2*harmonic];
   TComplex Qstar = TComplex::Conjugate(allQ[harmonic]);
   TComplex Q2star = TComplex::Conjugate(allQ[2*harmonic]);
-  // ---
   TComplex tc_three = Q2*Qstar*Qstar;
   // ---
   double one   = pow(Q.Rho2(),2);
@@ -140,6 +151,7 @@ double calc4event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
   // ---
   double numerator = one + two - three - four + five;
   double denominator = M*(M-1)*(M-2)*(M-3);
+  // ---
   return numerator/denominator;
 }
 
