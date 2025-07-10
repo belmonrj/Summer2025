@@ -205,11 +205,6 @@ double calc4event(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
   double three = tc_three.Re();
   double four  = 2*(2*(M-2)*Q.Rho2());
   double five  = 2*(M*(M-3));
-  cout << "one   is " << one << endl;
-  cout << "two   is " << two << endl;
-  cout << "three is " << three << endl;
-  cout << "four  is " << four << endl;
-  cout << "five  is " << five << endl;
   // ---
   double numerator = one + two - three - four + five;
   double denominator = M*(M-1)*(M-2)*(M-3);
