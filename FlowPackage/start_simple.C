@@ -26,6 +26,19 @@ TComplex get_flow_vector(const std::vector<double>& phi_angles, const int harmon
   return Q;
 }
 
+TComplex get_weighted_flow_vector(const std::vector<std::pair<double,double>>& phi_weight, const int harmonic)
+{
+  TComplex Q(0.0,0.0);
+  for ( auto it = phi_weight.begin(); it != phi_weight.end(); ++it )
+    {
+      double phi = it->first;
+      double wgt = it->second;
+      TComplex u(cos(harmonic*phi),sin(harmonic*phi));
+      Q += wgt*u;
+    }
+  return Q;
+}
+
 std::array<TComplex,max_harmonic> get_flow_vectors(const std::vector<double>& phi_angles)
 {
   std::array<TComplex,max_harmonic> allQ{};
@@ -35,6 +48,16 @@ std::array<TComplex,max_harmonic> get_flow_vectors(const std::vector<double>& ph
     }
   return allQ;
 }
+
+// std::array<std::array<TComplex,max_harmonic>,max_power> get_weighted_flow_vectors(const std::vector<double>& phi_angles)
+// {
+//   std::array<TComplex,max_harmonic> allQ{};
+//   for ( int i = 0; i < max_harmonic; ++i )
+//     {
+//       allQ[i] = get_flow_vector(phi_angles,i);
+//     }
+//   return allQ;
+// }
 
 // <cos(nphi)>
 double calccosevent(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
@@ -243,12 +266,38 @@ void start_simple()
 {
 
   std::vector<double> fake_angles = {0.00,0.05,3.00,3.05,4.00,4.05};
+  std::vector<double> fake_weights = {1.01,1.02,1.03,1.04,1.05,1.06};
+
+  std::vector<std::pair<double,double>> fake_angles_weights;
+  // --- this is a little dumb but let's not worry about that too much for the time being
+  TComplex check_fake_flow_2(0.0,0.0);
+  TComplex check_fake_flow_3(0.0,0.0);
+  TComplex check_weighted_fake_flow_2(0.0,0.0);
+  TComplex check_weighted_fake_flow_3(0.0,0.0);
+  for ( int i = 0; i < 6; ++i )
+    {
+      fake_angles_weights.push_back(std::make_pair(fake_angles[i],fake_weights[i]));
+      check_fake_flow_2 += TComplex(cos(2*fake_angles[i]),sin(2*fake_angles[i]));
+      check_fake_flow_3 += TComplex(cos(3*fake_angles[i]),sin(3*fake_angles[i]));
+      check_weighted_fake_flow_2 += TComplex(cos(2*fake_angles[i]),sin(2*fake_angles[i]));
+      check_weighted_fake_flow_3 += TComplex(cos(3*fake_angles[i]),sin(3*fake_angles[i]));
+    }
 
   TComplex fake_flow_2 = get_flow_vector(fake_angles,2);
   TComplex fake_flow_3 = get_flow_vector(fake_angles,3);
 
   cout << "Fake flow flow vector for harmonic 2 is " << fake_flow_2 << endl;
   cout << "Fake flow flow vector for harmonic 3 is " << fake_flow_3 << endl;
+  cout << "Fake flow check flow vector for harmonic 2 is " << check_fake_flow_2 << endl;
+  cout << "Fake flow check flow vector for harmonic 3 is " << check_fake_flow_3 << endl;
+
+  TComplex fake_weighted_flow_2 = get_weighted_flow_vector(fake_angles_weights,2);
+  TComplex fake_weighted_flow_3 = get_weighted_flow_vector(fake_angles_weights,3);
+
+  cout << "Fake flow weighted flow vector for harmonic 2 is " << fake_weighted_flow_2 << endl;
+  cout << "Fake flow weighted flow vector for harmonic 3 is " << fake_weighted_flow_3 << endl;
+
+  return;
 
   std::array<TComplex,max_harmonic> fake_flow_all = get_flow_vectors(fake_angles);
 
