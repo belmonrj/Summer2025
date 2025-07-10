@@ -2,11 +2,10 @@
 
 // 10 allows calculations of up to v2{10} and v3{6}
 // 12 allows calculations of up to v2{12} and v3{8}
+// 15 allows calculations of up to v2{14} and v3{10}
 const int max_harmonic = 10;
-
-// some of the generic formulas make use of weights to various powers
-// we're not going to worry about that for the time being
-const int max_power = 9;
+// --- the max power dictates the larges number of particles that can be correlated
+const int max_power = 10;
 
 // for generic formulas
 // will try to make this smarter, not dependent on global variable...
@@ -200,6 +199,8 @@ TComplex Recursion(int n, int* harmonic, int mult, int skip)
  // Calculate multi-particle correlators by using recursion (an improved faster version) originally developed by
  // Kristjan Gulbrandsen (gulbrand@nbi.dk).
 
+  cout << "At the top, mult is " << mult << endl;
+
   int nm1 = n-1;
   TComplex c(recQ(harmonic[nm1], mult));
   if (nm1 == 0) return c;
@@ -226,6 +227,8 @@ TComplex Recursion(int n, int* harmonic, int mult, int skip)
   }
   harmonic[nm2] = harmonic[counter1];
   harmonic[counter1] = hhold;
+
+  cout << "At the bottom, mult is " << mult << endl;
 
   if (mult == 1) return c-c2;
   return c-double(mult)*c2;
@@ -313,10 +316,17 @@ void start_simple()
   int test4num[4]={2,2,-2,-2};
   int test4den[4]={0,0,0,0};
   double super_smart_calc4 = Recursion(4,test4num).Re()/Recursion(4,test4den).Re();
-
   double smart_calc4 = calc4event(fake_flow_all,2);
 
   cout << "Flow vector based calculation of <4> (harmonic=2) is " << smart_calc4 << endl;
   cout << "Recursion based calculation of <4> (harmonic=2) is " << super_smart_calc4 << endl;
+
+  int test6num[6]={2,2,2,-2,-2,-2};
+  int test6den[6]={0,0,0,0,0,0};
+  double super_smart_calc6 = Recursion(6,test6num).Re()/Recursion(6,test6den).Re();
+  //double smart_calc6 = calc6event(fake_flow_all,2);
+
+  //cout << "Flow vector based calculation of <6> (harmonic=2) is " << smart_calc6 << endl;
+  cout << "Recursion based calculation of <6> (harmonic=2) is " << super_smart_calc6 << endl;
 
 }
