@@ -6,7 +6,11 @@ const int max_harmonic = 10;
 
 // some of the generic formulas make use of weights to various powers
 // we're not going to worry about that for the time being
-const int max_power = 1;
+const int max_power = 9;
+
+// for generic formulas
+// will try to make this smarter, not dependent on global variable...
+TComplex Qvector[max_harmonic][max_power];
 
 TComplex get_flow_vector(const std::vector<double>& phi_angles, const int harmonic)
 {
@@ -20,9 +24,9 @@ TComplex get_flow_vector(const std::vector<double>& phi_angles, const int harmon
   return Q;
 }
 
-std::array<TComplex, max_harmonic> get_flow_vectors(const std::vector<double>& phi_angles)
+std::array<TComplex,max_harmonic> get_flow_vectors(const std::vector<double>& phi_angles)
 {
-  std::array<TComplex, max_harmonic> allQ{};
+  std::array<TComplex,max_harmonic> allQ{};
   for ( int i = 0; i < max_harmonic; ++i )
     {
       allQ[i] = get_flow_vector(phi_angles,i);
@@ -30,8 +34,24 @@ std::array<TComplex, max_harmonic> get_flow_vectors(const std::vector<double>& p
   return allQ;
 }
 
+// <cos(nphi)>
+double calccosevent(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
+{
+  double M = allQ[0].Re();
+  if ( M < 1 ) return -9999;
+  return allQ[harmonic].Re()/M;
+}
+
+// <sin(nphi)>
+double calccsinevent(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
+{
+  double M = allQ[0].Re();
+  if ( M < 1 ) return -9999;
+  return allQ[harmonic].Im()/M;
+}
+
 // <cos(n(phi1-phi2))>
-double calc2event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
+double calc2event(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
 {
   double M = allQ[0].Re();
   if ( M < 2 ) return -9999;
@@ -47,7 +67,7 @@ double calc2event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
 }
 
 // <cos(n(phi1a-phi2b))>
-double calcSPevent(const std::array<TComplex, max_harmonic>& allQA, const std::array<TComplex, max_harmonic>& allQB, int harmonic)
+double calcSPevent(const std::array<TComplex,max_harmonic>& allQA, const std::array<TComplex,max_harmonic>& allQB, int harmonic)
 {
   double MA = allQA[0].Re();
   double MB = allQA[0].Re();
@@ -64,7 +84,7 @@ double calcSPevent(const std::array<TComplex, max_harmonic>& allQA, const std::a
 }
 
 // <cos(n(phi1+phi2))>
-double calccossum2event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
+double calccossum2event(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
 {
   double M = allQ[0].Re();
   if ( M < 2 ) return -9999;
@@ -80,7 +100,7 @@ double calccossum2event(const std::array<TComplex, max_harmonic>& allQ, int harm
 }
 
 // <sin(n(phi1+phi2))>
-double calcsinsum2event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
+double calcsinsum2event(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
 {
   double M = allQ[0].Re();
   if ( M < 2 ) return -9999;
@@ -96,7 +116,7 @@ double calcsinsum2event(const std::array<TComplex, max_harmonic>& allQ, int harm
 }
 
 // <cos(n(phi1-phi2-phi3))>
-double calccos3event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
+double calccos3event(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
 {
   double M = allQ[0].Re();
   if ( M < 3 ) return -9999;
@@ -114,7 +134,7 @@ double calccos3event(const std::array<TComplex, max_harmonic>& allQ, int harmoni
 }
 
 // <sin(n(phi1-phi2-phi3))>
-double calcsin3event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
+double calcsin3event(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
 {
   double M = allQ[0].Re();
   if ( M < 3 ) return -9999;
@@ -132,7 +152,7 @@ double calcsin3event(const std::array<TComplex, max_harmonic>& allQ, int harmoni
 }
 
 // <cos(n(phi1+phi2-phi3-phi4))>
-double calc4event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
+double calc4event(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
 {
   double M = allQ[0].Re();
   if ( M < 4 ) return -9999;
@@ -155,6 +175,59 @@ double calc4event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
   return numerator/denominator;
 }
 
+// --- from generic forumulas ----------------------------------------------------
+
+TComplex recQ(int n, int p)
+{
+  // Using the fact that Q{-n,p} = Q{n,p}^*.
+  if(n>=0){return Qvector[n][p];}
+  return TComplex::Conjugate(Qvector[-n][p]);
+} // TComplex recQ(int n, int p)
+
+TComplex Recursion(int n, int* harmonic)
+{
+  return Recursion(n,harmonic,1,0); // 1 and 0 are defaults from above
+}
+
+TComplex Recursion(int n, int* harmonic, int mult, int skip)
+{
+ // Calculate multi-particle correlators by using recursion (an improved faster version) originally developed by
+ // Kristjan Gulbrandsen (gulbrand@nbi.dk).
+
+  int nm1 = n-1;
+  TComplex c(recQ(harmonic[nm1], mult));
+  if (nm1 == 0) return c;
+  c *= Recursion(nm1, harmonic);
+  if (nm1 == skip) return c;
+
+  int multp1 = mult+1;
+  int nm2 = n-2;
+  int counter1 = 0;
+  int hhold = harmonic[counter1];
+  harmonic[counter1] = harmonic[nm2];
+  harmonic[nm2] = hhold + harmonic[nm1];
+  TComplex c2(Recursion(nm1, harmonic, multp1, nm2));
+  int counter2 = n-3;
+  while (counter2 >= skip) {
+    harmonic[nm2] = harmonic[counter1];
+    harmonic[counter1] = hhold;
+    ++counter1;
+    hhold = harmonic[counter1];
+    harmonic[counter1] = harmonic[nm2];
+    harmonic[nm2] = hhold + harmonic[nm1];
+    c2 += Recursion(nm1, harmonic, multp1, counter2);
+    --counter2;
+  }
+  harmonic[nm2] = harmonic[counter1];
+  harmonic[counter1] = hhold;
+
+  if (mult == 1) return c-c2;
+  return c-double(mult)*c2;
+
+}
+
+// -------------------------------------------------------------------------------
+
 
 
 void start_simple()
@@ -173,6 +246,10 @@ void start_simple()
   for ( int i = 0; i < max_harmonic; ++i )
     {
       cout << "Fake flow flow vector for all harmonic " << i << " is " << fake_flow_all[i] << endl;
+      for ( int j = 0; j < max_power; ++j )
+        {
+          Qvector[i][j] = fake_flow_all[i];
+        }
     }
 
   // loop over the angles to do some direct calculations and compare
@@ -191,6 +268,7 @@ void start_simple()
   //           ++counter;
   //         }
   //   }
+  // --- dumb but quick and easy
   for ( int i = 0; i < fake_angles.size(); ++i )
     {
       double phi1 = fake_angles[i];
@@ -213,5 +291,20 @@ void start_simple()
 
   cout << "Flow vector based calculation of cos(2(phi1-phi2)) is " << smart_cos2phi1phi2 << endl;
   cout << "Flow vector based calculation of cos(2(phi1+phi2)) is " << smart_cos2phi1phi2_p << endl;
+
+
+  int test2num[2]={2,-2};
+  int test2den[2]={0,0};
+  double super_smart_cos2phi1phi2 = Recursion(2,test2num).Re()/Recursion(2,test2den).Re();
+  //double super_smart_cos2phi1phi2 = Recursion(2,test2num,1,0).Re()/Recursion(2,test2den,1,0).Re();
+
+  int test2pnum[2]={2,2};
+  int test2pden[2]={0,0};
+  double super_smart_cos2phi1phi2_p = Recursion(2,test2pnum).Re()/Recursion(2,test2pden).Re();
+  //double super_smart_cos2phi1phi2_p = Recursion(2,test2pnum,1,0).Re()/Recursion(2,test2pden,1,0).Re();
+
+  cout << "Recursion based calculation of cos(2(phi1-phi2)) is " << super_smart_cos2phi1phi2 << endl;
+  cout << "Recursion based calculation of cos(2(phi1+phi2)) is " << super_smart_cos2phi1phi2_p << endl;
+
 
 }
