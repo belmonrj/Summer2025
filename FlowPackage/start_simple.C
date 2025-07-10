@@ -60,10 +60,8 @@ double calc2event(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
   if ( M < 2 ) return -9999;
   // ---
   TComplex Q = allQ[harmonic];
-  TComplex Qstar = TComplex::Conjugate(allQ[harmonic]);
-  TComplex tc_numerator = Q*Qstar-M;
   // ---
-  double numerator = tc_numerator.Re();
+  double numerator = Q.Rho2()-M;
   double denominator = M*(M-1);
   // ---
   return numerator/denominator;
