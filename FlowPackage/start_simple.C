@@ -41,13 +41,13 @@ double calc2event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
   TComplex tc_numerator = Q*Qstar;
   // ---
   double numerator = tc_numerator.Re();
-  double denominator = M*M(-1);
+  double denominator = M*(M-1);
   // ---
   return numerator/denominator;
 }
 
 // <cos(n(phi1a-phi2b))>
-double calcSPevent(const std::array<TComplex, max_harmonic>& allQA, std::array<TComplex, max_harmonic>& allQB, int harmonic)
+double calcSPevent(const std::array<TComplex, max_harmonic>& allQA, const std::array<TComplex, max_harmonic>& allQB, int harmonic)
 {
   double MA = allQA[0].Re();
   double MB = allQA[0].Re();
@@ -64,7 +64,7 @@ double calcSPevent(const std::array<TComplex, max_harmonic>& allQA, std::array<T
 }
 
 // <cos(n(phi1+phi2))>
-double BoulderCumulants::calccossum2event(const std::array<TComplex, max_harmonic>& allQA, std::array<TComplex, max_harmonic>& allQB, int harmonic)
+double calccossum2event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
 {
   double M = allQ[0].Re();
   if ( M < 2 ) return -9999;
@@ -80,7 +80,7 @@ double BoulderCumulants::calccossum2event(const std::array<TComplex, max_harmoni
 }
 
 // <sin(n(phi1+phi2))>
-double BoulderCumulants::calcsinsum2event(const std::array<TComplex, max_harmonic>& allQA, std::array<TComplex, max_harmonic>& allQB, int harmonic)
+double calcsinsum2event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
 {
   double M = allQ[0].Re();
   if ( M < 2 ) return -9999;
@@ -96,7 +96,7 @@ double BoulderCumulants::calcsinsum2event(const std::array<TComplex, max_harmoni
 }
 
 // <cos(n(phi1-phi2-phi3))>
-double BoulderCumulants::calccos3event(const std::array<TComplex, max_harmonic>& allQA, std::array<TComplex, max_harmonic>& allQB, int harmonic)
+double calccos3event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
 {
   double M = allQ[0].Re();
   if ( M < 3 ) return -9999;
@@ -114,7 +114,7 @@ double BoulderCumulants::calccos3event(const std::array<TComplex, max_harmonic>&
 }
 
 // <sin(n(phi1-phi2-phi3))>
-double BoulderCumulants::calcsin3event(const std::array<TComplex, max_harmonic>& allQA, std::array<TComplex, max_harmonic>& allQB, int harmonic)
+double calcsin3event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
 {
   double M = allQ[0].Re();
   if ( M < 3 ) return -9999;
@@ -159,5 +159,12 @@ double calc4event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
 
 void start_simple()
 {
+
+  std::vector<double> fake_angles = {0.00,0.05,3.00,3.05,4.00,4.05};
+
+  TComplex fake_flow_2 = get_flow_vector(fake_angles,2);
+  TComplex fake_flow_3 = get_flow_vector(fake_angles,3);
+
+  cout << "Fake flow flow vector for harmonic 2 is " << fake_flow_2 << endl;
 
 }
