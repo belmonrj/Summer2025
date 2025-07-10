@@ -154,6 +154,7 @@ double calcsin3event(const std::array<TComplex,max_harmonic>& allQ, int harmonic
   return numerator/denominator;
 }
 
+// --- new-style function, has a bug in it somewhere
 // <cos(n(phi1+phi2-phi3-phi4))>
 double calc4event(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
 {
@@ -164,18 +165,51 @@ double calc4event(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
   TComplex Q2 = allQ[2*harmonic];
   TComplex Qstar = TComplex::Conjugate(allQ[harmonic]);
   TComplex Q2star = TComplex::Conjugate(allQ[2*harmonic]);
-  TComplex tc_three = Q2*Qstar*Qstar;
+  TComplex tc_three = 2*Q2*Qstar*Qstar;
   // ---
   double one   = pow(Q.Rho2(),2);
   double two   = Q2.Rho2();
   double three = tc_three.Re();
   double four  = 2*(2*(M-2)*Q.Rho2());
   double five  = 2*(M*(M-3));
+  cout << "one   is " << one << endl;
+  cout << "two   is " << two << endl;
+  cout << "three is " << three << endl;
+  cout << "four  is " << four << endl;
+  cout << "five  is " << five << endl;
   // ---
   double numerator = one + two - three - four + five;
   double denominator = M*(M-1)*(M-2)*(M-3);
   // ---
   return numerator/denominator;
+}
+
+// --- older-style function, calculates correctly
+// <cos(n(phi1+phi2-phi3-phi4))>
+float calc4_event(float Xn, float Yn, float X2n, float Y2n, float M)
+{
+
+  if ( M < 4 ) return -9999;
+
+  float Qn2 = Xn*Xn+Yn*Yn;
+  float Qn2d = Xn*Xn-Yn*Yn;
+
+  float one   = Qn2*Qn2;
+  float two   = X2n*X2n+Y2n*Y2n;
+  float three = (2*(X2n*Qn2d + 2*Y2n*Xn*Yn));
+  float four  = 2*(2*(M-2)*Qn2);
+  float five  = 2*M*(M-3);
+  cout << "one   is " << one << endl;
+  cout << "two   is " << two << endl;
+  cout << "three is " << three << endl;
+  cout << "four  is " << four << endl;
+  cout << "five  is " << five << endl;
+
+  float numerator = one + two - three - four + five;
+  float denominator = M*(M-1)*(M-2)*(M-3);
+
+  return numerator/denominator;
+
 }
 
 // --- from generic forumulas ----------------------------------------------------
@@ -299,15 +333,23 @@ void start_simple()
   int test2num[2]={2,-2};
   int test2den[2]={0,0};
   double super_smart_cos2phi1phi2 = Recursion(2,test2num).Re()/Recursion(2,test2den).Re();
-  //double super_smart_cos2phi1phi2 = Recursion(2,test2num,1,0).Re()/Recursion(2,test2den,1,0).Re();
 
   int test2pnum[2]={2,2};
   int test2pden[2]={0,0};
   double super_smart_cos2phi1phi2_p = Recursion(2,test2pnum).Re()/Recursion(2,test2pden).Re();
-  //double super_smart_cos2phi1phi2_p = Recursion(2,test2pnum,1,0).Re()/Recursion(2,test2pden,1,0).Re();
 
   cout << "Recursion based calculation of cos(2(phi1-phi2)) is " << super_smart_cos2phi1phi2 << endl;
   cout << "Recursion based calculation of cos(2(phi1+phi2)) is " << super_smart_cos2phi1phi2_p << endl;
 
+  int test4num[4]={2,2,-2,-2};
+  int test4den[4]={0,0,0,0};
+  double super_smart_calc4 = Recursion(4,test4num).Re()/Recursion(4,test4den).Re();
+
+  double smart_calc4 = calc4event(fake_flow_all,2);
+
+  cout << "Older flow vector based calculation of <4> (harmonic=2) is "
+       << calc4_event(fake_flow_all[2].Re(),fake_flow_all[2].Im(),fake_flow_all[4].Re(),fake_flow_all[4].Im(),fake_flow_all[0].Re()) << endl;
+  cout << "Flow vector based calculation of <4> (harmonic=2) is " << smart_calc4 << endl;
+  cout << "Recursion based calculation of <4> (harmonic=2) is " << super_smart_calc4 << endl;
 
 }
