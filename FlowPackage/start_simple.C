@@ -12,6 +12,9 @@ const int max_power = 9;
 // will try to make this smarter, not dependent on global variable...
 TComplex Qvector[max_harmonic][max_power];
 
+TComplex Recursion(int, int*);
+TComplex Recursion(int, int*, int, int);
+
 TComplex get_flow_vector(const std::vector<double>& phi_angles, const int harmonic)
 {
   TComplex Q(0.0,0.0);
