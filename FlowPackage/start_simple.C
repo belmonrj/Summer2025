@@ -154,7 +154,6 @@ double calcsin3event(const std::array<TComplex,max_harmonic>& allQ, int harmonic
   return numerator/denominator;
 }
 
-// --- new-style function, has a bug in it somewhere
 // <cos(n(phi1+phi2-phi3-phi4))>
 double calc4event(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
 {
@@ -182,34 +181,6 @@ double calc4event(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
   double denominator = M*(M-1)*(M-2)*(M-3);
   // ---
   return numerator/denominator;
-}
-
-// --- older-style function, calculates correctly
-// <cos(n(phi1+phi2-phi3-phi4))>
-float calc4_event(float Xn, float Yn, float X2n, float Y2n, float M)
-{
-
-  if ( M < 4 ) return -9999;
-
-  float Qn2 = Xn*Xn+Yn*Yn;
-  float Qn2d = Xn*Xn-Yn*Yn;
-
-  float one   = Qn2*Qn2;
-  float two   = X2n*X2n+Y2n*Y2n;
-  float three = (2*(X2n*Qn2d + 2*Y2n*Xn*Yn));
-  float four  = 2*(2*(M-2)*Qn2);
-  float five  = 2*M*(M-3);
-  cout << "one   is " << one << endl;
-  cout << "two   is " << two << endl;
-  cout << "three is " << three << endl;
-  cout << "four  is " << four << endl;
-  cout << "five  is " << five << endl;
-
-  float numerator = one + two - three - four + five;
-  float denominator = M*(M-1)*(M-2)*(M-3);
-
-  return numerator/denominator;
-
 }
 
 // --- from generic forumulas ----------------------------------------------------
@@ -347,8 +318,6 @@ void start_simple()
 
   double smart_calc4 = calc4event(fake_flow_all,2);
 
-  cout << "Older flow vector based calculation of <4> (harmonic=2) is "
-       << calc4_event(fake_flow_all[2].Re(),fake_flow_all[2].Im(),fake_flow_all[4].Re(),fake_flow_all[4].Im(),fake_flow_all[0].Re()) << endl;
   cout << "Flow vector based calculation of <4> (harmonic=2) is " << smart_calc4 << endl;
   cout << "Recursion based calculation of <4> (harmonic=2) is " << super_smart_calc4 << endl;
 
