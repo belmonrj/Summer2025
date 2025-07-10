@@ -38,7 +38,7 @@ double calc2event(const std::array<TComplex, max_harmonic>& allQ, int harmonic)
   // ---
   TComplex Q = allQ[harmonic];
   TComplex Qstar = TComplex::Conjugate(allQ[harmonic]);
-  TComplex tc_numerator = Q*Qstar;
+  TComplex tc_numerator = Q*Qstar-M;
   // ---
   double numerator = tc_numerator.Re();
   double denominator = M*(M-1);
@@ -166,5 +166,52 @@ void start_simple()
   TComplex fake_flow_3 = get_flow_vector(fake_angles,3);
 
   cout << "Fake flow flow vector for harmonic 2 is " << fake_flow_2 << endl;
+  cout << "Fake flow flow vector for harmonic 3 is " << fake_flow_3 << endl;
+
+  std::array<TComplex,max_harmonic> fake_flow_all = get_flow_vectors(fake_angles);
+
+  for ( int i = 0; i < max_harmonic; ++i )
+    {
+      cout << "Fake flow flow vector for all harmonic " << i << " is " << fake_flow_all[i] << endl;
+    }
+
+  // loop over the angles to do some direct calculations and compare
+  int counter = 0;
+  double dumb_cos2phi1phi2 = 0;
+  double dumb_cos2phi1phi2_p = 0;
+  // for ( auto it = fake_angles.begin(); it != fake_angles.end(); ++it )
+  //   {
+  //     double phi1 = *it;
+  //     cout << "phi1 is " << phi1 << endl;
+  //       for ( auto jt = fake_angles.begin(); jt != fake_angles.end(); ++jt )
+  //         {
+  //           double phi2 = *jt;
+  //           if ( phi1 == phi2 ) continue;
+  //           dumb_cos2phi1phi2 += cos(2*(phi1-phi2));
+  //           ++counter;
+  //         }
+  //   }
+  for ( int i = 0; i < fake_angles.size(); ++i )
+    {
+      double phi1 = fake_angles[i];
+      cout << "phi1 is " << phi1 << endl;
+      for ( int j = i+1; j < fake_angles.size(); ++j )
+          {
+            double phi2 = fake_angles[j];;
+            dumb_cos2phi1phi2 += cos(2*(phi1-phi2));
+            dumb_cos2phi1phi2_p += cos(2*(phi1+phi2));
+            ++counter;
+          }
+    }
+  dumb_cos2phi1phi2 /= counter;
+  dumb_cos2phi1phi2_p /= counter;
+  cout << "Direct calculation of cos(2(phi1-phi2)) is " << dumb_cos2phi1phi2 << endl;
+  cout << "Direct calculation of cos(2(phi1+phi2)) is " << dumb_cos2phi1phi2_p << endl;
+
+  double smart_cos2phi1phi2 = calc2event(fake_flow_all,2);
+  double smart_cos2phi1phi2_p = calccossum2event(fake_flow_all,2);
+
+  cout << "Flow vector based calculation of cos(2(phi1-phi2)) is " << smart_cos2phi1phi2 << endl;
+  cout << "Flow vector based calculation of cos(2(phi1+phi2)) is " << smart_cos2phi1phi2_p << endl;
 
 }
