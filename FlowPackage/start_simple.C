@@ -33,12 +33,14 @@ TComplex get_weighted_flow_vector(const std::vector<std::pair<double,double>>& p
     {
       double phi = it->first;
       double wgt = it->second;
+      cout << "weight is " << it->second << endl;
       TComplex u(cos(harmonic*phi),sin(harmonic*phi));
       Q += wgt*u;
     }
   return Q;
 }
 
+// --- wondering if I want to change this...
 std::array<TComplex,max_harmonic> get_flow_vectors(const std::vector<double>& phi_angles)
 {
   std::array<TComplex,max_harmonic> allQ{};
@@ -49,15 +51,31 @@ std::array<TComplex,max_harmonic> get_flow_vectors(const std::vector<double>& ph
   return allQ;
 }
 
-// std::array<std::array<TComplex,max_harmonic>,max_power> get_weighted_flow_vectors(const std::vector<double>& phi_angles)
-// {
-//   std::array<TComplex,max_harmonic> allQ{};
-//   for ( int i = 0; i < max_harmonic; ++i )
-//     {
-//       allQ[i] = get_flow_vector(phi_angles,i);
-//     }
-//   return allQ;
-// }
+// --- because I think I want to do this differently
+std::array<std::array<TComplex,max_harmonic>,max_power> get_weighted_flow_vectors(const std::vector<std::pair<double,double>>& phi_weight)
+{
+  std::vector<std::pair<double,double>> new_phi_weight = phi_weight;
+  std::array<std::array<TComplex,max_harmonic>,max_power> allQ{{}};
+  for ( int i = 0; i < max_harmonic; ++i )
+    {
+      for ( int j = 0; j < max_power; ++j )
+        {
+          // weight needs to be raised to power j
+          auto it_old = phi_weight.begin();
+          auto it_new = new_phi_weight.begin();
+          for ( ; it_old != phi_weight.end() && it_new != new_phi_weight.end(); ++it_old, ++it_new )
+            {
+              cout << "j is " << j << endl;
+              cout << "old weight is " << it_old->second << endl;
+              it_new->second = pow(it_old->second,j);
+              cout << "new weight is " << it_new->second << endl;
+            }
+          // use the new weight to get the weighted flow vector
+          allQ[i][j] = get_weighted_flow_vector(new_phi_weight,i);
+        }
+    }
+  return allQ;
+}
 
 // <cos(nphi)>
 double calccosevent(const std::array<TComplex,max_harmonic>& allQ, int harmonic)
@@ -222,7 +240,7 @@ TComplex Recursion(int n, int* harmonic, int mult, int skip)
  // Calculate multi-particle correlators by using recursion (an improved faster version) originally developed by
  // Kristjan Gulbrandsen (gulbrand@nbi.dk).
 
-  cout << "At the top, mult is " << mult << endl;
+  //cout << "At the top, mult is " << mult << endl;
 
   int nm1 = n-1;
   TComplex c(recQ(harmonic[nm1], mult));
@@ -251,7 +269,7 @@ TComplex Recursion(int n, int* harmonic, int mult, int skip)
   harmonic[nm2] = harmonic[counter1];
   harmonic[counter1] = hhold;
 
-  cout << "At the bottom, mult is " << mult << endl;
+  //cout << "At the bottom, mult is " << mult << endl;
 
   if (mult == 1) return c-c2;
   return c-double(mult)*c2;
@@ -279,8 +297,8 @@ void start_simple()
       fake_angles_weights.push_back(std::make_pair(fake_angles[i],fake_weights[i]));
       check_fake_flow_2 += TComplex(cos(2*fake_angles[i]),sin(2*fake_angles[i]));
       check_fake_flow_3 += TComplex(cos(3*fake_angles[i]),sin(3*fake_angles[i]));
-      check_weighted_fake_flow_2 += TComplex(cos(2*fake_angles[i]),sin(2*fake_angles[i]));
-      check_weighted_fake_flow_3 += TComplex(cos(3*fake_angles[i]),sin(3*fake_angles[i]));
+      check_weighted_fake_flow_2 += fake_weights[i]*TComplex(cos(2*fake_angles[i]),sin(2*fake_angles[i]));
+      check_weighted_fake_flow_3 += fake_weights[i]*TComplex(cos(3*fake_angles[i]),sin(3*fake_angles[i]));
     }
 
   TComplex fake_flow_2 = get_flow_vector(fake_angles,2);
@@ -296,10 +314,27 @@ void start_simple()
 
   cout << "Fake flow weighted flow vector for harmonic 2 is " << fake_weighted_flow_2 << endl;
   cout << "Fake flow weighted flow vector for harmonic 3 is " << fake_weighted_flow_3 << endl;
+  cout << "Fake flow check weighted flow vector for harmonic 2 is " << check_weighted_fake_flow_2 << endl;
+  cout << "Fake flow check weighted flow vector for harmonic 3 is " << check_weighted_fake_flow_3 << endl;
 
-  return;
+  //return;
 
   std::array<TComplex,max_harmonic> fake_flow_all = get_flow_vectors(fake_angles);
+
+  std::array<std::array<TComplex,max_harmonic>,max_power> fake_weighted_flow_all = get_weighted_flow_vectors(fake_angles_weights);
+
+  cout << "Without weights: " << endl;
+  cout << fake_flow_2 << endl;
+  cout << fake_flow_all[2] << endl;
+  cout << fake_weighted_flow_all[2][0] << endl;
+
+  cout << "With linear weights: " << endl;
+  cout << fake_weighted_flow_2 << endl;
+  // --- this is giving the wrong result at the moment, for all powers...
+  // --- second index = 1 should give linear weight
+  cout << fake_weighted_flow_all[2][1] << endl;
+
+  return;
 
   for ( int i = 0; i < max_harmonic; ++i )
     {
@@ -372,7 +407,11 @@ void start_simple()
 
   int test6num[6]={2,2,2,-2,-2,-2};
   int test6den[6]={0,0,0,0,0,0};
-  double super_smart_calc6 = Recursion(6,test6num).Re()/Recursion(6,test6den).Re();
+  cout << "Starting recursion calculation for 6..." << endl;
+  double numerator6 = Recursion(6,test6num).Re();
+  cout << "Now need denominator..." << endl;
+  double denominator6 = Recursion(6,test6den).Re();
+  double super_smart_calc6 = numerator6/denominator6;
   //double smart_calc6 = calc6event(fake_flow_all,2);
 
   //cout << "Flow vector based calculation of <6> (harmonic=2) is " << smart_calc6 << endl;
