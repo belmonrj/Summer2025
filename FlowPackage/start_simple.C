@@ -33,7 +33,6 @@ TComplex get_weighted_flow_vector(const std::vector<std::pair<double,double>>& p
     {
       double phi = it->first;
       double wgt = it->second;
-      cout << "weight is " << it->second << endl;
       TComplex u(cos(harmonic*phi),sin(harmonic*phi));
       Q += wgt*u;
     }
@@ -65,10 +64,7 @@ std::array<std::array<TComplex,max_harmonic>,max_power> get_weighted_flow_vector
           auto it_new = new_phi_weight.begin();
           for ( ; it_old != phi_weight.end() && it_new != new_phi_weight.end(); ++it_old, ++it_new )
             {
-              cout << "j is " << j << endl;
-              cout << "old weight is " << it_old->second << endl;
               it_new->second = pow(it_old->second,j);
-              cout << "new weight is " << it_new->second << endl;
             }
           // use the new weight to get the weighted flow vector
           allQ[i][j] = get_weighted_flow_vector(new_phi_weight,i);
@@ -333,6 +329,10 @@ void start_simple()
   // --- this is giving the wrong result at the moment, for all powers...
   // --- second index = 1 should give linear weight
   cout << fake_weighted_flow_all[2][1] << endl;
+  cout << "With higher order weights: " << endl;
+  cout << fake_weighted_flow_all[2][2] << endl;
+  cout << fake_weighted_flow_all[2][3] << endl;
+  cout << fake_weighted_flow_all[2][4] << endl;
 
   return;
 
