@@ -1,0 +1,349 @@
+\documentclass[aspectratio=169,compress,10pt]{beamer} %%%
+%\documentclass[compress,9pt]{beamer} %%%
+%\documentclass[compress,8pt]{beamer} %%%
+\usetheme{Warsaw} %%%
+
+
+
+\usepackage{enumitem} % for [nosep] option on itemize
+\usepackage{setspace} % for setstretch to reduce paragraph spacing...
+\usepackage{adjustbox} % this a new one for me...
+\usepackage{changepage} % for adjustwidth
+\usepackage[percent]{overpic} % for placing text on top of a figure
+\usepackage{pict2e} % for help with overpic
+\usepackage{epstopdf} % automatically converts eps figures to pdf format
+\usepackage{array}
+\usepackage{animate} % show animations with a series of png images
+\usepackage{eso-pic} % for placing figures anywhere on the slide...
+\usepackage{xspace} % for the collision system macros
+\usepackage[absolute,overlay]{textpos} % for placing text anywhere on slide (using textblock)
+\usepackage{framed,color} % package for special title slide
+\usepackage{amsmath,amssymb,amsfonts,amsthm,amsbsy} % math symbols and the like
+\usepackage{slashed} % Feynman slashed notatation
+\usepackage{tikz} % all manner of graphical stuff...
+\usepackage[framemethod=tikz]{mdframed} % package for special title slide
+\usepackage{pdfpages} % include pdfs as a whole page
+
+%%% a bunch of stuff to make a box around text
+%%% see tcolorbox below
+\usepackage{tcolorbox}
+%https://osl.ugr.es/CTAN/macros/latex/contrib/tcolorbox/tcolorbox.pdf
+\tcbuselibrary{breakable}
+\tcbset{%any default parameters
+  width=0.9\textwidth,
+  halign=justify,
+  center,
+  breakable,
+  colback=white
+}
+
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks = true,
+  linkcolor = white,
+  urlcolor = blue,
+}
+
+\definecolor{shadecolor}{rgb}{0.5,0.5,0.5}
+\definecolor{green}{rgb}{0,0.8,0}
+\definecolor{olive}{rgb}{0,0.6,0}
+\definecolor{gold}{rgb}{0.8,0.6,0}
+\definecolor{copper}{rgb}{0.8,0.6,0.4}
+\definecolor{lightblue}{rgb}{0.3,0.3,1.0}
+\definecolor{royalblue}{rgb}{0.25,0.41,0.88}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.8}
+\definecolor{jpurple}{rgb}{0.8,0.0,0.8}
+
+\usepackage{xcolor}
+\newcommand\crule[3][black]{\textcolor{#1}{\rule{#2}{#3}}}
+
+
+\newcommand{\lenitem}[2][.7\linewidth]{\parbox[t]{#1}{\strut #2\strut}}
+
+
+%%% define my own headline
+\setbeamertemplate{headline}
+{%
+  \leavevmode%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex]{section in head/foot}%
+    \insertsectionnavigationhorizontal{\paperwidth}{\hskip0pt}{}%
+  \end{beamercolorbox}%
+  \vskip2pt%
+}
+
+%%% define my own footline
+\setbeamertemplate{footline}
+{%
+  \leavevmode%
+  \hbox{\begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1.125ex,leftskip=.3cm plus1fill,rightskip=.3cm]{author in head/foot}%
+    \usebeamerfont{author in head/foot}\insertshortauthor
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1.125ex,leftskip=.3cm,rightskip=.3cm plus1fil]{title in head/foot}%
+    \usebeamerfont{title in head/foot}\insertshorttitle
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+
+
+
+%%% define location for logo---0.9, 0.9 is upper right
+\newcommand\LogoLocation[1]{\AtPageLowerLeft{\put(\LenToUnit{0.8\paperwidth},\LenToUnit{0.05\paperheight}){#1}}}
+
+%%% command to place logo slide-by-slide
+%\newcommand\addlogo{\AddToShipoutPictureFG*{\LogoLocation{{\includegraphics[width=3.0cm,keepaspectratio]{logos/phenixlogo.pdf}}}}}
+
+%%% command to add talk to specific location (nice to have them all in the same place on the slide)
+\newcommand\addtalk[1]{%
+% size, x, y
+\begin{textblock}{15}(0.5,2)%
+{#1}%
+\end{textblock}%
+}
+
+
+
+
+%%% set another another option
+\setbeamertemplate{navigation symbols}{} % this is the same as \beamertemplatenavigationsymbolsempty
+
+%%% add some packages
+\usepackage{amsmath,amssymb,amsfonts,amsthm,amsbsy} % math symbols and the like
+\usepackage{slashed} % Feynman slashed notatation
+\usepackage{tikz}
+\usepackage{pdfpages} % include pdfs as a whole page
+
+%%% for title slide box
+\newmdenv[tikzsetting={draw=black,fill=white,fill opacity=0.7, line width=4pt},%
+backgroundcolor=none,leftmargin=0,rightmargin=0,innertopmargin=4pt,skipbelow=\baselineskip,%
+skipabove=\baselineskip]{TitleBox}
+
+
+%%% Cyrillic fonts
+\input cyracc.def
+\font\tencyr=wncyr9
+\def\cyr{\tencyr\cyracc}
+
+%makes footnote with symbol instead of number
+\long\def\symbolfootnote[#1]#2{\begingroup\def\thefootnote{\fnsymbol{footnote}}\footnote[#1]{#2}\endgroup}
+
+
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}} %% Creates a partial derivative
+\newcommand{\totd}[2]{\frac{d #1}{d #2}} %% Creates a total derivative
+\newcommand{\hau}{\mbox{$^3\text{He}$+Au}}
+\newcommand{\dndeta}{dN_{ch}/d\eta}
+\newcommand{\detdeta}{dE_{T}/d\eta}
+\newcommand{\bracket}[1]{\left< #1 \right>}
+\newcommand{\covariance}[2]{\left< #1 #2 \right> - \left< #1 \right>\left< #2 \right>}
+
+\newcommand{\la}{\langle}
+\newcommand{\ra}{\rangle}
+\newcommand{\lb}{\left<}
+\newcommand{\rb}{\right>}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\mean}[1]{\la #1 \ra}
+\newcommand{\dmean}[1]{\la\la #1 \ra\ra}
+\newcommand{\sump}{\sideset{}{'}\sum}
+
+\newcommand{\ee}{\mbox{$e^+$$+$$e^-$}\xspace}
+\newcommand{\ep}{\mbox{$e$$+$$p$}\xspace}
+\newcommand{\ea}{\mbox{$e$$+$$A$}\xspace}
+\newcommand{\pp}{\mbox{$p$$+$$p$}\xspace}
+\newcommand{\pa}{\mbox{$p$$+$$A$}\xspace}
+\newcommand{\pau}{\mbox{$p$$+$Au}\xspace}
+\newcommand{\pal}{\mbox{$p$$+$Al}\xspace}
+\newcommand{\ppb}{\mbox{$p$$+$Pb}\xspace}
+\newcommand{\dau}{\mbox{$d$$+$Au}\xspace}
+\newcommand{\heau}{\mbox{$^3$He$+$Au}\xspace}
+\newcommand{\pdau}{\mbox{$p/d$$+$Au}\xspace}
+\newcommand{\pdheau}{\mbox{$p/d/^3$He$+$Au}\xspace}
+\newcommand{\cucu}{\mbox{Cu$+$Cu}\xspace}
+\newcommand{\cuau}{\mbox{Cu$+$Au}\xspace}
+\newcommand{\auau}{\mbox{Au$+$Au}\xspace}
+\newcommand{\pbpb}{\mbox{Pb$+$Pb}\xspace}
+\newcommand{\uu}{\mbox{U$+$U}\xspace}
+
+
+\newcommand{\vt}{v_2}
+\newcommand{\vtt}{v_2\{2\}}
+\newcommand{\ctf}{c_2\{4\}}
+\newcommand{\vtf}{v_2\{4\}}
+\newcommand{\vts}{v_2\{6\}}
+\newcommand{\vte}{v_2\{8\}}
+\newcommand{\vtg}{v_2\{2,|\Delta\eta|>2\}}
+\newcommand{\vnt}{v_n\{2\}}
+\newcommand{\cnf}{c_n\{4\}}
+\newcommand{\vnf}{v_n\{4\}}
+\newcommand{\vns}{v_n\{6\}}
+\newcommand{\vne}{v_n\{8\}}
+\newcommand{\vng}{v_n\{2,|\Delta\eta|>2\}}
+
+
+%\newcommand{\snn}{\sqrt{s_{_{NN}}}}
+\newcommand{\snn}{\sqrt{s_{NN}}}
+
+\newcommand{\nfvtxt}{N_{\text{tracks}}^{\text{FVTX}}}
+
+\newcommand{\ncoll}{N_{\text{coll}}}
+\newcommand{\npart}{N_{\text{part}}}
+
+\newcommand{\attention}[1]{\textcolor{red}{\textbf{#1}}}
+\newcommand{\talkname}[1]{\textcolor{darkblue}{\textbf{#1}}}
+\newcommand{\emphasize}[1]{\textcolor{darkblue}{\textbf{#1}}}
+\newcommand{\talktitle}[1]{``#1''}
+
+
+
+
+\title[MVTX autorecoveries and acceptance \hspace{1.0cm} Slide \insertframenumber]{MVTX autorecoveries and acceptance}
+%\author[R. Belmont\hspace{6.25cm}]{Ron Belmont \\ University of North Carolina Greensboro \\ sPHENIX Deputy Run Coordinator}
+\author[R. Belmont\hspace{6.25cm}]{Ron Belmont \\ University of North Carolina Greensboro}
+%\date{RHIC \& AGS Annual Users Meeting 2025 \\ Brookhaven National Laboratory \\ 21 May 2025}
+
+% remove line above footnotes...
+\renewcommand{\footnoterule}{
+  \kern -3pt
+  \hrule width \textwidth height 0pt
+  \kern 3pt
+}
+
+
+%\titlegraphic{\includegraphics[height=1.0cm]{logos/phenixlogo.pdf}\hfill\includegraphics[trim=0 30 0 30, clip=true, height=1.2cm]{logos/Boulder_FL.pdf}}
+%\titlegraphic{\hfill\includegraphics[trim=0 0 0 0, clip=true, height=1.2cm]{logos/uncg1.pdf}}
+%\titlegraphic{\vspace{-1.7cm}\includegraphics[trim=0 0 0 0, clip=true, width=0.9\linewidth]{banner_zimanyi.png}}
+%\titlegraphic{\includegraphics[trim=0 0 0 0, clip=true, height=1.2cm]{logo_brick2x2.jpg}\hfill\includegraphics[trim=0 0 0 0, clip=true, height=1.2cm]{logos/uncg1.pdf}}
+
+
+%%% - now begin document
+\begin{document}
+
+
+%%% - title slide
+%\begin{frame}
+%\titlepage
+%\end{frame}
+
+
+
+
+
+\begin{frame}{Fill 35635}
+\begin{textblock}{3.5}(1.5,3)
+Run 68025 \\
+STAR 0 mrad
+\end{textblock}
+\begin{textblock}{10}(5.5,2)
+\includegraphics[width=0.99\linewidth]{mvtx_aracc_68025.png}
+\end{textblock}
+\begin{textblock}{3.5}(1.5,9.5)
+Run 68027 \\
+STAR 1 mrad
+\end{textblock}
+\begin{textblock}{10}(5.5,8.5)
+\includegraphics[width=0.99\linewidth]{mvtx_aracc_68027.png}
+\end{textblock}
+\end{frame}
+
+
+
+\begin{frame}{Fill 35638}
+\begin{textblock}{3.5}(1.5,3)
+Run 68051 \\
+STAR 0 mrad
+\end{textblock}
+\begin{textblock}{10}(5.5,2)
+\includegraphics[width=0.99\linewidth]{mvtx_aracc_68051.png}
+\end{textblock}
+\begin{textblock}{3.5}(1.5,9.5)
+Run 68053 \\
+STAR 1 mrad
+\end{textblock}
+\begin{textblock}{10}(5.5,8.5)
+\includegraphics[width=0.99\linewidth]{mvtx_aracc_68053.png}
+\end{textblock}
+\end{frame}
+
+
+
+\begin{frame}{Fill 35642}
+\begin{textblock}{3.5}(1.5,3)
+Run 68085 \\
+STAR 0 mrad
+\end{textblock}
+\begin{textblock}{10}(5.5,2)
+\includegraphics[width=0.99\linewidth]{mvtx_aracc_68085.png}
+\end{textblock}
+\begin{textblock}{3.5}(1.5,9.5)
+Run 68087 \\
+STAR 1 mrad
+\end{textblock}
+\begin{textblock}{10}(5.5,8.5)
+\includegraphics[width=0.99\linewidth]{mvtx_aracc_68087.png}
+\end{textblock}
+\end{frame}
+
+
+
+\begin{frame}{Fill 35643}
+\begin{textblock}{3.5}(1.5,3)
+Run 68102 \\
+STAR 0 mrad
+\end{textblock}
+\begin{textblock}{10}(5.5,2)
+\includegraphics[width=0.99\linewidth]{mvtx_aracc_68102.png}
+\end{textblock}
+\begin{textblock}{3.5}(1.5,9.5)
+Run 68104 \\
+STAR 1 mrad
+\end{textblock}
+\begin{textblock}{10}(5.5,8.5)
+\includegraphics[width=0.99\linewidth]{mvtx_aracc_68104.png}
+\end{textblock}
+\end{frame}
+
+
+
+\begin{frame}{Fill 35645}
+\begin{textblock}{3.5}(1.5,3)
+Run 68117 \\
+STAR 0 mrad
+\end{textblock}
+\begin{textblock}{10}(5.5,2)
+\includegraphics[width=0.99\linewidth]{mvtx_aracc_68117.png}
+\end{textblock}
+\begin{textblock}{3.5}(1.5,9.5)
+Run 68119 \\
+STAR 1 mrad
+\end{textblock}
+\begin{textblock}{10}(5.5,8.5)
+\includegraphics[width=0.99\linewidth]{mvtx_aracc_68119.png}
+\end{textblock}
+\end{frame}
+
+
+
+\begin{frame}{Start of store comparison}
+\begin{textblock}{3.5}(1.5,9.5)
+Run 68040 \\
+Start of Fill 35638 \\
+STAR 0 mrad
+\end{textblock}
+\begin{textblock}{10}(5.5,8.5)
+\includegraphics[width=0.99\linewidth]{mvtx_aracc_68040.png}
+\end{textblock}
+\begin{textblock}{3.5}(1.5,3)
+Run 67947 \\
+Start of Fill 35631 \\
+STAR 1 mrad
+\end{textblock}
+\begin{textblock}{10}(5.5,2)
+\includegraphics[width=0.99\linewidth]{mvtx_aracc_67947.png}
+\end{textblock}
+\end{frame}
+
+
+
+
+\end{document}
+
