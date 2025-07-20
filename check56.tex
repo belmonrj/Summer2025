@@ -1,0 +1,136 @@
+\documentclass[aspectratio=169,compress,10pt]{beamer}
+
+\mode<presentation>
+{
+\usetheme{Warsaw}
+\beamertemplatenavigationsymbolsempty
+}
+
+\usepackage{hyperref}
+
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\green}[1]{\textcolor{OliveGreen}{#1}}
+
+
+\title[Title of presentation]{Title of presentation}
+\author[Ron B.]{Ron B.}
+\institute[UNCG]{\normalsize University of North Carolina Greensboro}
+\date[\today]{\today}
+
+\begin{document}
+
+%\begin{frame}
+%\titlepage
+%\end{frame}
+
+\begin{frame}{Store 35733 (Sunday July 6, last store before 56 MHz SRF commissioning)}
+Run 69043 (start of store) \hspace{3cm} Run 69052 (end of store) \\
+ZDC coin 42.7 kHz \hspace{4cm} ZDC coin 14.3 kHz \\
+MBD narrow 10.0 kHz \hspace{3.5cm} MBD narrow 4.9 kHz \\
+Ratio = 0.234 \hspace{4.75cm} Ratio = 0.34
+\begin{center}
+\includegraphics[trim=0 0 0 22.5cm, clip=true, width=0.49\textwidth]{BBCMONDRAW_2_69043.png}
+\includegraphics[trim=0 0 0 22.5cm, clip=true, width=0.49\textwidth]{BBCMONDRAW_2_69052.png}
+\end{center}
+%\begin{itemize}
+%\item Large increase in satellite bunches from beginning to end of store
+%\end{itemize}
+\end{frame}
+
+\begin{frame}{Store 38505 (Friday July 18, 56 MHz SRF operating at 500 kV)}
+Run 69603 (start of store) \hspace{3cm} Run 69611 (end of store) \\
+ZDC coin 43.4 kHz \hspace{4cm} ZDC coin 10.3 kHz \\
+MBD narrow 10.7 kHz \hspace{3.5cm} MBD narrow 3.6 kHz \\
+Ratio = 0.247 \hspace{4.75cm} Ratio = 0.35
+\begin{center}
+\includegraphics[trim=0 0 0 22.5cm, clip=true, width=0.49\textwidth]{BBCMONDRAW_2_69603.png}
+\includegraphics[trim=0 0 0 22.5cm, clip=true, width=0.49\textwidth]{BBCMONDRAW_2_69611.png}
+\end{center}
+%\begin{itemize}
+%\item Dramatic reduction in sattelite bunches at end of store
+%\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Observations}
+\begin{itemize}
+\item Dramatic reduction in sattelite bunches at end of store with 56 MHz SRF operation
+\item The fraction of MBD narrow to ZDC seems largely unaffected by 56 MHz SRF operation,
+which I don't think is surprising
+\newline---Squeezing the satellite bunches into the primary bunch would increase rate
+\newline---But not fundamentally change the vertex distribution (governed by the crossing angle)
+\item The rate drops more sharply as the store progress with 56 MHz SRF operation
+\item The benefit of squeezing the satellite bunches into the primary seems to be overpowered
+by the higher rate of beam losses
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{How to get the rates for those runs}
+Example: ZDC trigger (index = 1), run 69043
+\begin{verbatim}
+psql -d daq -U phnxro -c "select run.runnumber, index, raw,
+ertimestamp - brtimestamp as duration,
+extract(epoch from ertimestamp - brtimestamp) as duration_seconds,
+raw / extract(epoch from ertimestamp - brtimestamp) as rate
+from gl1_scalers join run on run.runnumber = gl1_scalers.runnumber
+where run.runnumber = 69043 and index = 1;"
+
+ runnumber | index |   raw    | duration | duration_seconds |        rate        
+-----------+-------+----------+----------+------------------+--------------------
+     69043 |     1 | 59802683 | 00:23:20 |      1400.000000 | 42716.202142857143
+(1 row)
+
+\end{verbatim}
+\end{frame}
+
+
+
+
+
+
+
+
+
+\end{document}
+
+
+-----------+-------+----------+----------+------------------+--------------------
+     69043 |     1 | 59802683 | 00:23:20 |      1400.000000 | 42716.202142857143
+(1 row)
+
+ runnumber | index |   raw    | duration | duration_seconds |        rate        
+-----------+-------+----------+----------+------------------+--------------------
+     69052 |     1 | 43803635 | 00:50:56 |      3056.000000 | 14333.650196335079
+(1 row)
+
+ runnumber | index |   raw   | duration | duration_seconds |        rate        
+-----------+-------+---------+----------+------------------+--------------------
+     69603 |     1 | 4127330 | 00:01:35 |        95.000000 | 43445.578947368421
+(1 row)
+
+ runnumber | index |   raw   | duration | duration_seconds |        rate        
+-----------+-------+---------+----------+------------------+--------------------
+     69611 |     1 | 6092117 | 00:09:53 |       593.000000 | 10273.384485666105
+(1 row)
+
+ runnumber | index |   raw    | duration | duration_seconds |         rate          
+-----------+-------+----------+----------+------------------+-----------------------
+     69043 |    12 | 13963743 | 00:23:20 |      1400.000000 | 9974.1021428571428571
+(1 row)
+
+ runnumber | index |   raw    | duration | duration_seconds |         rate          
+-----------+-------+----------+----------+------------------+-----------------------
+     69052 |    12 | 14847769 | 00:50:56 |      3056.000000 | 4858.5631544502617801
+(1 row)
+
+ runnumber | index |   raw   | duration | duration_seconds |        rate        
+-----------+-------+---------+----------+------------------+--------------------
+     69603 |    12 | 1021092 | 00:01:35 |        95.000000 | 10748.336842105263
+(1 row)
+
+ runnumber | index |   raw   | duration | duration_seconds |         rate          
+-----------+-------+---------+----------+------------------+-----------------------
+     69611 |    12 | 2149919 | 00:09:53 |       593.000000 | 3625.4957841483979764
+(1 row)
