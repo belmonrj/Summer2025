@@ -231,7 +231,7 @@ TComplex Recursion(int n, int* harmonic, int mult, int skip)
  // Calculate multi-particle correlators by using recursion (an improved faster version) originally developed by
  // Kristjan Gulbrandsen (gulbrand@nbi.dk).
 
-  //cout << "At the top, mult is " << mult << endl;
+  //std::cout << "At the top, mult is " << mult << std::endl;
 
   int nm1 = n-1;
   TComplex c(recQ(harmonic[nm1], mult));
@@ -260,7 +260,7 @@ TComplex Recursion(int n, int* harmonic, int mult, int skip)
   harmonic[nm2] = harmonic[counter1];
   harmonic[counter1] = hhold;
 
-  //cout << "At the bottom, mult is " << mult << endl;
+  //std::cout << "At the bottom, mult is " << mult << std::endl;
 
   if (mult == 1) return c-c2;
   return c-double(mult)*c2;
@@ -295,18 +295,18 @@ void start_simple()
   TComplex fake_flow_2 = get_flow_vector(fake_angles,2);
   TComplex fake_flow_3 = get_flow_vector(fake_angles,3);
 
-  cout << "Fake flow flow vector for harmonic 2 is " << fake_flow_2 << endl;
-  cout << "Fake flow flow vector for harmonic 3 is " << fake_flow_3 << endl;
-  cout << "Fake flow check flow vector for harmonic 2 is " << check_fake_flow_2 << endl;
-  cout << "Fake flow check flow vector for harmonic 3 is " << check_fake_flow_3 << endl;
+  std::cout << "Fake flow flow vector for harmonic 2 is " << fake_flow_2 << std::endl;
+  std::cout << "Fake flow flow vector for harmonic 3 is " << fake_flow_3 << std::endl;
+  std::cout << "Fake flow check flow vector for harmonic 2 is " << check_fake_flow_2 << std::endl;
+  std::cout << "Fake flow check flow vector for harmonic 3 is " << check_fake_flow_3 << std::endl;
 
   TComplex fake_weighted_flow_2 = get_weighted_flow_vector(fake_angles_weights,2);
   TComplex fake_weighted_flow_3 = get_weighted_flow_vector(fake_angles_weights,3);
 
-  cout << "Fake flow weighted flow vector for harmonic 2 is " << fake_weighted_flow_2 << endl;
-  cout << "Fake flow weighted flow vector for harmonic 3 is " << fake_weighted_flow_3 << endl;
-  cout << "Fake flow check weighted flow vector for harmonic 2 is " << check_weighted_fake_flow_2 << endl;
-  cout << "Fake flow check weighted flow vector for harmonic 3 is " << check_weighted_fake_flow_3 << endl;
+  std::cout << "Fake flow weighted flow vector for harmonic 2 is " << fake_weighted_flow_2 << std::endl;
+  std::cout << "Fake flow weighted flow vector for harmonic 3 is " << fake_weighted_flow_3 << std::endl;
+  std::cout << "Fake flow check weighted flow vector for harmonic 2 is " << check_weighted_fake_flow_2 << std::endl;
+  std::cout << "Fake flow check weighted flow vector for harmonic 3 is " << check_weighted_fake_flow_3 << std::endl;
 
   //return;
 
@@ -314,26 +314,26 @@ void start_simple()
 
   std::array<std::array<TComplex,max_harmonic>,max_power> fake_weighted_flow_all = get_weighted_flow_vectors(fake_angles_weights);
 
-  cout << "Without weights: " << endl;
-  cout << fake_flow_2 << endl;
-  cout << fake_flow_all[2] << endl;
-  cout << fake_weighted_flow_all[2][0] << endl;
+  std::cout << "Without weights: " << std::endl;
+  std::cout << fake_flow_2 << std::endl;
+  std::cout << fake_flow_all[2] << std::endl;
+  std::cout << fake_weighted_flow_all[2][0] << std::endl;
 
-  cout << "With linear weights: " << endl;
-  cout << fake_weighted_flow_2 << endl;
+  std::cout << "With linear weights: " << std::endl;
+  std::cout << fake_weighted_flow_2 << std::endl;
   // --- this is giving the wrong result at the moment, for all powers...
   // --- second index = 1 should give linear weight
-  cout << fake_weighted_flow_all[2][1] << endl;
-  cout << "With higher order weights: " << endl;
-  cout << fake_weighted_flow_all[2][2] << endl;
-  cout << fake_weighted_flow_all[2][3] << endl;
-  cout << fake_weighted_flow_all[2][4] << endl;
+  std::cout << fake_weighted_flow_all[2][1] << std::endl;
+  std::cout << "With higher order weights: " << std::endl;
+  std::cout << fake_weighted_flow_all[2][2] << std::endl;
+  std::cout << fake_weighted_flow_all[2][3] << std::endl;
+  std::cout << fake_weighted_flow_all[2][4] << std::endl;
 
   return;
 
   for ( int i = 0; i < max_harmonic; ++i )
     {
-      cout << "Fake flow flow vector for all harmonic " << i << " is " << fake_flow_all[i] << endl;
+      std::cout << "Fake flow flow vector for all harmonic " << i << " is " << fake_flow_all[i] << std::endl;
       for ( int j = 0; j < max_power; ++j )
         {
           Qvector[i][j] = fake_flow_all[i];
@@ -347,7 +347,7 @@ void start_simple()
   // for ( auto it = fake_angles.begin(); it != fake_angles.end(); ++it )
   //   {
   //     double phi1 = *it;
-  //     cout << "phi1 is " << phi1 << endl;
+  //     std::cout << "phi1 is " << phi1 << std::endl;
   //       for ( auto jt = fake_angles.begin(); jt != fake_angles.end(); ++jt )
   //         {
   //           double phi2 = *jt;
@@ -360,7 +360,7 @@ void start_simple()
   for ( int i = 0; i < fake_angles.size(); ++i )
     {
       double phi1 = fake_angles[i];
-      cout << "phi1 is " << phi1 << endl;
+      std::cout << "phi1 is " << phi1 << std::endl;
       for ( int j = i+1; j < fake_angles.size(); ++j )
           {
             double phi2 = fake_angles[j];;
@@ -371,14 +371,14 @@ void start_simple()
     }
   dumb_cos2phi1phi2 /= counter;
   dumb_cos2phi1phi2_p /= counter;
-  cout << "Direct calculation of cos(2(phi1-phi2)) is " << dumb_cos2phi1phi2 << endl;
-  cout << "Direct calculation of cos(2(phi1+phi2)) is " << dumb_cos2phi1phi2_p << endl;
+  std::cout << "Direct calculation of cos(2(phi1-phi2)) is " << dumb_cos2phi1phi2 << std::endl;
+  std::cout << "Direct calculation of cos(2(phi1+phi2)) is " << dumb_cos2phi1phi2_p << std::endl;
 
   double smart_cos2phi1phi2 = calc2event(fake_flow_all,2);
   double smart_cos2phi1phi2_p = calccossum2event(fake_flow_all,2);
 
-  cout << "Flow vector based calculation of cos(2(phi1-phi2)) is " << smart_cos2phi1phi2 << endl;
-  cout << "Flow vector based calculation of cos(2(phi1+phi2)) is " << smart_cos2phi1phi2_p << endl;
+  std::cout << "Flow vector based calculation of cos(2(phi1-phi2)) is " << smart_cos2phi1phi2 << std::endl;
+  std::cout << "Flow vector based calculation of cos(2(phi1+phi2)) is " << smart_cos2phi1phi2_p << std::endl;
 
 
   int test2num[2]={2,-2};
@@ -389,27 +389,27 @@ void start_simple()
   int test2pden[2]={0,0};
   double super_smart_cos2phi1phi2_p = Recursion(2,test2pnum).Re()/Recursion(2,test2pden).Re();
 
-  cout << "Recursion based calculation of cos(2(phi1-phi2)) is " << super_smart_cos2phi1phi2 << endl;
-  cout << "Recursion based calculation of cos(2(phi1+phi2)) is " << super_smart_cos2phi1phi2_p << endl;
+  std::cout << "Recursion based calculation of cos(2(phi1-phi2)) is " << super_smart_cos2phi1phi2 << std::endl;
+  std::cout << "Recursion based calculation of cos(2(phi1+phi2)) is " << super_smart_cos2phi1phi2_p << std::endl;
 
   int test4num[4]={2,2,-2,-2};
   int test4den[4]={0,0,0,0};
   double super_smart_calc4 = Recursion(4,test4num).Re()/Recursion(4,test4den).Re();
   double smart_calc4 = calc4event(fake_flow_all,2);
 
-  cout << "Flow vector based calculation of <4> (harmonic=2) is " << smart_calc4 << endl;
-  cout << "Recursion based calculation of <4> (harmonic=2) is " << super_smart_calc4 << endl;
+  std::cout << "Flow vector based calculation of <4> (harmonic=2) is " << smart_calc4 << std::endl;
+  std::cout << "Recursion based calculation of <4> (harmonic=2) is " << super_smart_calc4 << std::endl;
 
   int test6num[6]={2,2,2,-2,-2,-2};
   int test6den[6]={0,0,0,0,0,0};
-  cout << "Starting recursion calculation for 6..." << endl;
+  std::cout << "Starting recursion calculation for 6..." << std::endl;
   double numerator6 = Recursion(6,test6num).Re();
-  cout << "Now need denominator..." << endl;
+  std::cout << "Now need denominator..." << std::endl;
   double denominator6 = Recursion(6,test6den).Re();
   double super_smart_calc6 = numerator6/denominator6;
   //double smart_calc6 = calc6event(fake_flow_all,2);
 
-  //cout << "Flow vector based calculation of <6> (harmonic=2) is " << smart_calc6 << endl;
-  cout << "Recursion based calculation of <6> (harmonic=2) is " << super_smart_calc6 << endl;
+  //std::cout << "Flow vector based calculation of <6> (harmonic=2) is " << smart_calc6 << std::endl;
+  std::cout << "Recursion based calculation of <6> (harmonic=2) is " << super_smart_calc6 << std::endl;
 
 }
